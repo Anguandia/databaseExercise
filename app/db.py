@@ -299,3 +299,14 @@ class Db:
             'is_active': simcard[6],
         }
         return do
+
+
+    def get_count(self, table):
+        try:
+            self.cursor.execute("SELECT * FROM {}".format(table))
+            count = self.cursor.rowcount
+            res = f'{count} entries in {table}'
+        except Exception as error:
+            print(error)
+            res = error
+        print(res)
