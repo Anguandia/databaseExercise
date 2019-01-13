@@ -1,7 +1,7 @@
 import psycopg2
 from flask.cli import with_appcontext
 import click
-from models import Human, Simcard
+from app.models import Human, Simcard
 
 
 class Db:
@@ -9,7 +9,7 @@ class Db:
         self.db_name = db_name
         try:
             self.connection = psycopg2.connect(
-                "dbname = postgres user = postgres password = kukuer1210 host = localhost \
+                "dbname = postgres user = postgres password = postgres host = localhost \
                 port = 5432"
                 )
             self.connection.autocommit = True
@@ -18,9 +18,10 @@ class Db:
             self.connection.commit()
             self.cursor.close()
             self.connection.close()
-            print(f'database {self.db_name} creaed')
+            print(f'database {self.db_name} created')
         except Exception:
-            pass
+            self.connection = psycopg2.connect(f'''dbname = {self.db_name} user = postgres password = kukuer1210 host = localhost \
+                port = 5432''')
         self.connection = psycopg2.connect(
                 f'''dbname = {self.db_name} user = postgres password = kukuer1210 host = localhost \
                 port = 5432'''
@@ -70,8 +71,11 @@ class Db:
                     ))
             self.save()
             print("human", human.__dict__, "saved to db")
+            res = "human", human.__dict__, "saved to db"
         except (Exception, psycopg2.Error) as error:
             print("Failed to create human:", error)
+            res = "Failed to create human:", error
+        return res
 
     def get_humans(self):
         try:
@@ -80,8 +84,8 @@ class Db:
             humans = [Db.dict_human(human) for human in men]
             res = humans
         except Exception as error:
-            res = f'no humans in humans'
-            print(error)
+            #print(error)
+            res = 'no humans in humans'
         return res
 
 
