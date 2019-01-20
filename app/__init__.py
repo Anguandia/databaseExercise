@@ -1,6 +1,6 @@
 import os
 from flask import Flask
-from config.config import app_config
+from conf.config import app_config
 from app.db import Db
 
 db_name='twice'
