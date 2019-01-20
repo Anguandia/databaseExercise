@@ -3,7 +3,7 @@ import os
 
 class Config:
     DEBUG = False
-    DATABASE_URL = 'postgresql: //postgres:kukuer1210@localhost/zero'
+    DATABASE_URL = os.getenv('DATABASE_URL')
 
 
 class Development(Config):
@@ -13,7 +13,6 @@ class Development(Config):
 class Testing(Config):
     DEBUG = True
     TESTING = True
-    DATABASE_URL = 'postgresql: //postgres:kukuer1210@localhost/twice'
 
 
 app_config = {'DEVELOPMENT': Development, 'TESTING': Testing}

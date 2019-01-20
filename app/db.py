@@ -1,15 +1,20 @@
 import psycopg2
+import os
 from flask.cli import with_appcontext
 import click
 from app.models import Human, Simcard
 
+user = os.getenv('USER', 'postgres')
+password = os.getenv('PASSWORD', 'kukuer1210')
+host = os.getenv('HOST', 'localhost')
+db_name = os.getenv('DATABASE', 'ireporter')
 
 class Db:
     def __init__(self, db_name):
         self.db_name = db_name
         try:
             self.connection = psycopg2.connect(
-                "dbname = postgres user = postgres password = kukuer1210 host = localhost \
+                f"dbname = postgres user = postgres password = kukuer1210 host = localhost \
                 port = 5432"
                 )
             self.connection.autocommit = True
@@ -24,7 +29,7 @@ class Db:
             # self.connection = psycopg2.connect(f'''dbname = {self.db_name} user = postgres # password = kukuer1210 host = localhost \
             #     port = 5432''')
         self.connection = psycopg2.connect(
-                f'''dbname = {self.db_name} user = postgres password = kukuer1210 host = localhost \
+                f'''dbname = {self.db_name} user = {user} password = {password} host = {host} \
                 port = 5432'''
                 )
         self.connection.autocommit = True

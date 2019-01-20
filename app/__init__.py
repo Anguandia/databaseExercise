@@ -3,7 +3,7 @@ from flask import Flask
 from conf.config import app_config
 from app.db import Db
 
-db_name='twice'
+db_name=os.getenv('DATABASE')
 
 
 def create_app(config_name):
