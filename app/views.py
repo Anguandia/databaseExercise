@@ -27,3 +27,7 @@ def new():
 def delete(id):
     res = Db(db_name).delete_human(id)
     return jsonify({'msg': res})
+
+@app.route('/', methods=['get'])
+def dal():
+    return jsonify({'msg': 'welcome'})
