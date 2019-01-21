@@ -1,0 +1,21 @@
+language: python
+python:
+  - "3.6"
+# command to install dependencies
+install:
+  - pip install -r requirements.txt
+# command to run tests
+services:
+  - postgresql
+before script:
+  - psql -c 'create database travis_ci_test;' -U postgres
+env:
+  - FLASK_ENV='TESTING'
+script:
+  - python -m pytest --cov
+after_success:
+  - coveralls
+notifications:
+  email:
+    recipients:
+      - mikeanguandia@yahoo.com
