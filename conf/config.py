@@ -13,6 +13,8 @@ class Development(Config):
 class Testing(Config):
     DEBUG = True
     TESTING = True
+    DATABASE_URL = 'postgresql://postgres:kukuer1210@localhost/test_db'
+    DATABASE = 'test_db'
 
 
 app_config = {'DEVELOPMENT': Development, 'TESTING': Testing}
