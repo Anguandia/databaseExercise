@@ -1,15 +1,20 @@
 import psycopg2
+import os
 from flask.cli import with_appcontext
 import click
-from models import Human, Simcard
+from app.models import Human, Simcard
 
+user = os.getenv('USER', 'postgres')
+password = os.getenv('PASSWORD', 'kukuer1210')
+host = os.getenv('HOST', 'localhost')
+db_name = os.getenv('DATABASE', 'ireporter')
 
 class Db:
-    def __init__(self, db_name='postgres'):
+    def __init__(self, db_name):
         self.db_name = db_name
         try:
             self.connection = psycopg2.connect(
-                "dbname = postgres user = postgres password = kukuer1210 host = localhost \
+                f"dbname = postgres user = postgres password = kukuer1210 host = localhost \
                 port = 5432"
                 )
             self.connection.autocommit = True
@@ -18,11 +23,13 @@ class Db:
             self.connection.commit()
             self.cursor.close()
             self.connection.close()
-            print(f'database {self.db_name} creaed')
-        except Exception:
-            pass
+            print(f'database {self.db_name} created')
+        except Exception as e:
+            print(e)
+            # self.connection = psycopg2.connect(f'''dbname = {self.db_name} user = postgres # password = kukuer1210 host = localhost \
+            #     port = 5432''')
         self.connection = psycopg2.connect(
-                f'''dbname = {self.db_name} user = postgres password = kukuer1210 host = localhost \
+                f'''dbname = {self.db_name} user = {user} password = {password} host = {host} \
                 port = 5432'''
                 )
         self.connection.autocommit = True
@@ -70,8 +77,11 @@ class Db:
                     ))
             self.save()
             print("human", human.__dict__, "saved to db")
+            res = "human", human.__dict__, "saved to db"
         except (Exception, psycopg2.Error) as error:
             print("Failed to create human:", error)
+            res = "Failed to create human:", error
+        return res
 
     def get_humans(self):
         try:
@@ -80,8 +90,8 @@ class Db:
             humans = [Db.dict_human(human) for human in men]
             res = humans
         except Exception as error:
-            res = f'no humans in humans'
-            print(error)
+            #print(error)
+            res = 'no humans in humans'
         return res
 
 
@@ -100,7 +110,7 @@ class Db:
     def fetch_human(self, human_id):
         try:
             self.cursor.execute(
-                f'''SELECT * FROM humans WHERE human_id {human_id}''')
+                f'''SELECT * FROM humans WHERE human_id = {human_id}''')
             human = self.cursor.fetchone()
             print(Db.dict_human(human))
             res = self.dict_human(human)
@@ -148,16 +158,16 @@ class Db:
 
     def delete_human(self, human_id):
         human = self.fetch_human(human_id)
-        if human:
-            try:
-                sql_delete_query = 'delete from humans WHERE human_id = %s'
-                self.cursor.execute(sql_delete_query, (human_id,))
-                self.save()
-                res = 'human {} deleted'.format(human['name'])
-            except (Exception, psycopg2.Error) as error:
-                res = 'error deleting human {}'.format(human['name'])
-                print("Error deleting", error)
-        res = 'no human {}'.format(human['name'])
+        #if human:
+        try:
+            sql_delete_query = 'delete from humans WHERE human_id = %s'
+            self.cursor.execute(sql_delete_query, (human_id,))
+            self.save()
+            res = 'human {} deleted'.format(human['name'])
+        except (Exception, psycopg2.Error) as error:
+            res = 'error deleting human {}'.format(human['name'])
+            print("Error deleting", error)
+        #res = 'no human {}'.format(human['name'])
         print(res)
         return res
 
@@ -299,3 +309,14 @@ class Db:
             'is_active': simcard[6],
         }
         return do
+
+
+    def get_count(self, table):
+        try:
+            self.cursor.execute("SELECT * FROM {}".format(table))
+            count = self.cursor.rowcount
+            res = f'{count} entries in {table}'
+        except Exception as error:
+            print(error)
+            res = error
+        print(res)
