@@ -4,7 +4,7 @@ astroid==2.0.4
 atomicwrites==1.2.1
 attrs==18.2.0
 autoenv==1.0.0
-Babel==2.6.0
+Babel==2.9.1
 blinker==1.4
 certifi==2018.8.24
 cffi==1.11.5
